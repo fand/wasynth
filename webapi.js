@@ -205,80 +205,87 @@ $(function(){
 
 
 
+    var pushing = false;
     $(window).keydown(function(e){
-        if(player.isPlaying()){
-            player.noteOff();
-        }
-        switch(e.keyCode){
-        case 90:
-            player.noteOn(1); break;
-        case 88:
-            player.noteOn(2); break;
-        case 67:
-            player.noteOn(3); break;
-        case 86:
-            player.noteOn(4); break;
-        case 66:
-            player.noteOn(5); break;
-        case 78:
-            player.noteOn(6); break;
-        case 77:
-            player.noteOn(7); break;
-        case 188: case 65:
-            player.noteOn(8); break;
-        case 190: case 83:
-            player.noteOn(9); break;
-        case 191: case 68:
-            player.noteOn(10); break;
-        case 70:
-            player.noteOn(11); break;
-        case 71:
-            player.noteOn(12); break;
-        case 72:
-            player.noteOn(13); break;
-        case 74: 
-            player.noteOn(14); break;
-        case 75: case 81:
-            player.noteOn(15); break;
-        case 76: case 87:
-            player.noteOn(16); break;
-        case 187: case 69:
-            player.noteOn(17); break;
-        case 82:
-            player.noteOn(18); break;
-        case 84:
-            player.noteOn(19); break;
-        case 89:
-            player.noteOn(20); break;
-        case 85:
-            player.noteOn(21); break;
-        case 73: case 49:
-            player.noteOn(22); break;
-        case 79: case 50:
-            player.noteOn(23); break;
-        case 80: case 51:
-            player.noteOn(24); break;
-        case 52:
-            player.noteOn(25); break;
-        case 53:
-            player.noteOn(26); break;
-        case 54:
-            player.noteOn(27); break;
-        case 55:
-            player.noteOn(28); break;
-        case 56:
-            player.noteOn(29); break;
-        case 57:
-            player.noteOn(30); break;
-        case 48:
-            player.noteOn(31); break;
+        if(pushing==false){
+            pushing=true;
+            
+            if(player.isPlaying()){
+                player.noteOff();
+            }
+            
+            switch(e.keyCode){
+            case 90:
+                player.noteOn(1); break;
+            case 88:
+                player.noteOn(2); break;
+            case 67:
+                player.noteOn(3); break;
+            case 86:
+                player.noteOn(4); break;
+            case 66:
+                player.noteOn(5); break;
+            case 78:
+                player.noteOn(6); break;
+            case 77:
+                player.noteOn(7); break;
+            case 188: case 65:
+                player.noteOn(8); break;
+            case 190: case 83:
+                player.noteOn(9); break;
+            case 191: case 68:
+                player.noteOn(10); break;
+            case 70:
+                player.noteOn(11); break;
+            case 71:
+                player.noteOn(12); break;
+            case 72:
+                player.noteOn(13); break;
+            case 74: 
+                player.noteOn(14); break;
+            case 75: case 81:
+                player.noteOn(15); break;
+            case 76: case 87:
+                player.noteOn(16); break;
+            case 187: case 69:
+                player.noteOn(17); break;
+            case 82:
+                player.noteOn(18); break;
+            case 84:
+                player.noteOn(19); break;
+            case 89:
+                player.noteOn(20); break;
+            case 85:
+                player.noteOn(21); break;
+            case 73: case 49:
+                player.noteOn(22); break;
+            case 79: case 50:
+                player.noteOn(23); break;
+            case 80: case 51:
+                player.noteOn(24); break;
+            case 52:
+                player.noteOn(25); break;
+            case 53:
+                player.noteOn(26); break;
+            case 54:
+                player.noteOn(27); break;
+            case 55:
+                player.noteOn(28); break;
+            case 56:
+                player.noteOn(29); break;
+            case 57:
+                player.noteOn(30); break;
+            case 48:
+                player.noteOn(31); break;
+            }
         }
     });
-
+    
     $(window).keyup(function(){
+        pushing = false;
         player.noteOff();
     });
-
+    
     var pat = [3,3,10,3,10,3,9,3,3,3,10,3,10,3,9,3,1,1,10,1,10,1,9,1,2,2,10,2,10,2,9,2];
     player.readPattern(pat);
 });
