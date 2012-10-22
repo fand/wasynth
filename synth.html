@@ -8,7 +8,7 @@
     <option selected="selected">RECT</option>
     <option>NOISE</option>
   </select><br>
-  OCT <input name="octave" class="octave" type="number" min="0" max="5" value="2"><br>
+  OCT <input name="octave" class="octave" type="number" min="0" max="5" value="1"><br>
   SHIFT <input name="interval" class="interval" type="number" min="-12" max="12" value="0"><br>
   TUNE <input name="fine" class="fine" type="number" min="-50" max="50" value="0"><br>
 </fieldset>
@@ -17,14 +17,14 @@
   <legend>OSC2</legend>
   WAVE <select class="shape">
     <option>SINE</option>
-    <option selected="selected">TRIANGLE</option>
-    <option>SAW</option>
+    <option>TRIANGLE</option>
+    <option selected="selected">SAW</option>
     <option>RECT</option>
     <option>NOISE</option>
   </select><br>
-  OCT <input name="octave" class="octave" type="number" min="0" max="5" value="2"><br>
+  OCT <input name="octave" class="octave" type="number" min="0" max="5" value="1"><br>
   SHIFT <input name="interval" class="interval" type="number" min="-12" max="12" value="7"><br>
-  TUNE <input name="fine" class="fine" type="number" min="-50" max="50" value="2"><br>
+  TUNE <input name="fine" class="fine" type="number" min="-50" max="50" value="1"><br>
 </fieldset>
 
 <fieldset name="vco2" class="RS_module RS_vco2">
@@ -52,8 +52,8 @@
   <legend>Envelope</legend>
   <canvas name="canvasEG"></canvas>
   ATTACK <input name="attack" type="range" min="0" max="50000" value="0"><br>
-  DECAY <input name="decay" type="range" min="0" max="50000" value="0"><br>
-  SUSTAIN <input name="sustain" type="range" min="0" max="100" value="100"><br>
+  DECAY <input name="decay" type="range" min="0" max="50000" value="800"><br>
+  SUSTAIN <input name="sustain" type="range" min="0" max="100" value="40"><br>
   RELEASE <input name="release" type="range" min="0" max="50000" value="10000"><br>
 </fieldset>
 
