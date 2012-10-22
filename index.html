@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+<title>web audio api synthesizer</title>
+<link rel="stylesheet" href="riff.css" />
+<script src="jquery.min.js"></script>
+<script src="jquery.socialbutton-1.9.0.min.js"></script>
+<script src="synth.js"></script>
+<script src="webapi.js"></script>
+<script src="keyboard.js"></script>
+</head>
+<body>
+
+  
+<div id="wrapper">
+
+  <div id="social" class="clearfix">
+    <div id="facebook" class="social"></div>
+    <div id="twitter" class="social"></div>
+    <div id="hatena" class="social"></div>
+  </div>
+  
+<div id="env"></div>
+
+<div id="indicator"></div>
+
+<table>
+  <tr note="10">
+    <th>10th</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="9">
+    <th>9th</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="8">
+    <th>8va</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="7">
+    <th>7th</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="6">
+    <th>6th</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="5">
+    <th>5th</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="4">
+    <th>4th</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="3">
+    <th>3rd</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="2">
+    <th>2nd</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+  <tr note="1">
+    <th>1st</th>
+    <td>0</td><td>1</td><td>2</td><td>3</td>
+    <td>4</td><td>5</td><td>6</td><td>7</td>
+    <td>8</td><td>9</td><td>10</td><td>11</td>
+    <td>12</td><td>13</td><td>14</td><td>15</td>
+    <td>16</td><td>17</td><td>18</td><td>19</td>
+    <td>20</td><td>21</td><td>22</td><td>23</td>
+    <td>24</td><td>25</td><td>26</td><td>27</td>
+    <td>28</td><td>29</td><td>30</td><td>31</td>
+  </tr>
+</table>
+
+<div id="instruments">
+</div>
+
+<form name="control"id="control" class="module">
+  mode: <select name="mode">
+    <option>IONIAN</option>
+    <option>DORIAN</option>
+    <option>PHRYGIAN</option>
+    <option>LYDIAN</option>
+    <option>MIXOLYDIAN</option>
+    <option>AEOLIAN</option>
+    <option>LOCRIAN</option>
+  </select>
+  BPM: <input name="bpm" min="60" max="240" value="120" type="number">
+  <input type="button" id="play" value="play" style="width:80px;"/>
+  <input type="button" id="stop" value="stop" />
+</form>
+
+</div>
+  
+</body>
+</html>

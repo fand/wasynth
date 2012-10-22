@@ -1,0 +1,31 @@
+$(function(){
+var note = 0;
+var time = 0;
+var current_track = 0;
+
+$("td").each(function(){
+    $(this).addClass("free");
+});
+    
+$("tr").bind("mouseenter", function(event){
+    note = $(this).attr("note");
+});
+
+$("td").bind("click", function(){
+    time = $(this).text();
+
+    if($(this).hasClass("pressed")){
+        $(this).removeClass().addClass("free");
+
+    }else{
+        // 同じ列でクリックされた以外のセルをpressedクラスをremove
+        $(".pressed").filter(function(i){
+            return ($(this).text() == time) && (10-i != note);
+        }).each(function(){
+            $(this).removeClass().addClass("free");
+        });
+        $(this).removeClass().addClass("pressed");
+    }
+});
+
+});
