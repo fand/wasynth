@@ -60,11 +60,14 @@ $html = <<<EOT
   RELEASE <input name="release" type="range" min="0" max="50000" value="10000"><br>
 </fieldset>
 
-<fieldset id="filter_{$id}" class="RS_module RS_filter">
-  <legend>Filter</legend> 
-  FREQ <br><input id="freq_{$id}" type="range" min="60" max="20000" value="5000"><br><br>
-  Q <br><input id="Q_{$id}" type="range" min="0" max="40" value="6"><br><br> 
-  REZ <br><input name="resonance_{$id}" type="range" min="0" max="30" value="10"><br>
+<fieldset id="filter_{$id}" class="RS_module RS_filter clearfix">
+  <legend>Filter</legend>
+  <div class="RS_filter_freq">
+  FREQ <br><input id="freq_{$id}" class="filter_slider" type="range" min="60" max="20000" value="5000"><br>
+  </div>
+  <div class="RS_filter_Q">
+  REZ <br><input id="Q_{$id}" class="filter_slider" type="range" min="0" max="40" value="6"><br>
+  </div>
 </fieldset>
 
 <fieldset id="FEG_{$id}" class="RS_module RS_FEG"> 

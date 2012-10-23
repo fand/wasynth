@@ -173,9 +173,8 @@ td{
     0px -1px 0px rgba(255,255,255,0.3) inset;
 }
 
-td.hover, td:hover{
+td:hover{
     box-shadow:0px 0px 5px rgb(0,255,255);
-
 }
 
 #wrapper{
@@ -325,3 +324,25 @@ legend{
     border-bottom: 1px solid #0df;
 }
 
+.RS_filter_freq{
+    float: left;
+    text-align: center;
+    left: 0px;
+    margin:0 5%;
+    width:40%;
+}
+.RS_filter_Q{
+    float: left;
+    text-align: center;
+    top: 0px;
+    width:50%;
+    margin: 0;
+}
+
+.filter_slider{
+    width: 200px;
+    margin-top: 140px;
+    -webkit-transform-origin: 22% 100%;
+    -webkit-transform: rotate(270deg);
+    /*translate(0px, 20px),*/
+}

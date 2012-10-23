@@ -181,19 +181,16 @@ EG.prototype.getEnvelope = function(){
 var ResFilter = function(ctx){
     this.lpf = ctx.createBiquadFilter();
     this.lpf.type = 0;    // lowpass 0
-    this.bpf = ctx.createBiquadFilter();
-    this.bpf.type = 5;    // peaking 5
 
     this.freq_min = 80;
     this.freq = 5000;
+    this.vivid = 0;
     this.resonance = 10;
     this.Q = 10;
-
 };
 
 ResFilter.prototype.connect = function(dst){
-    this.lpf.connect(this.bpf);
-    this.bpf.connect(dst);
+    this.lpf.connect(dst);
 };
 
 ResFilter.prototype.connectFEG = function(g){
@@ -205,27 +202,26 @@ ResFilter.prototype.getNode = function(){
 }
 
 ResFilter.prototype.getResonance = function(){
-    return this.resonance;
+    return this.Q;
 };
 
 ResFilter.prototype.setFreq = function(freq){
     this.freq = freq - this.freq_min;
 };
 
+ResFilter.prototype.setVivid = function(vivid){
+//    this.vivid = vivid;
+//    this.lpf.gain.value = this.vivid - 50;
+};
+
 ResFilter.prototype.setQ = function(q){
     this.Q = q;
     this.lpf.Q.value = this.Q;
-    this.bpf.Q.value = this.Q;
 };
 
-ResFilter.prototype.setResonance = function(res){
-    this.resonance = res;
-    this.bpf.gain.value = this.resonance;
-};
 
 ResFilter.prototype.update = function(){
     this.lpf.frequency.value = this.freq * this.feg.getEnvelope() + this.freq_min;
-    this.bpf.frequency.value = this.freq * this.feg.getEnvelope() + this.freq_min;
 };
 
 
@@ -264,7 +260,7 @@ Synth.prototype.initDOM = function(){
         $("#vco0_"+self.id).bind("change", function(){
             self.setVCOParam();
         });    
-        $("#vco0_"+self.id).bind("change", function(){
+        $("#vco1_"+self.id).bind("change", function(){
             self.setVCOParam();
         });
     
@@ -369,7 +365,6 @@ Synth.prototype.setFEGParam = function(){
 Synth.prototype.setFilterParam = function(){
     this.filter.setFreq($("#freq_"+this.id).val());
     this.filter.setQ($("#Q_"+this.id).val());
-    this.filter.setResonance($("#resonance_"+this.id).val());
 };
 
 Synth.prototype.setGain = function(){
