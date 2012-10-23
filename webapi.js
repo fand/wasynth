@@ -232,7 +232,8 @@ $(function(){
     });
 
     $("#stop").bind("mousedown", function(){
-            player.stop();
+        player.stop();
+        $("#play").attr("value", "play");
     });
 
     
