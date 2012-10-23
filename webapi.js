@@ -147,6 +147,9 @@ $(function(){
     var player = new Player();
     var note = 0;
     var time = 0;
+
+    var pressed_key = false;
+    var pressed_mouse = false;
     
     $("td").each(function(){
         $(this).addClass("off");
@@ -156,7 +159,8 @@ $(function(){
         note = $(this).attr("note");
     });
     
-    $("td").bind("click", function(){
+    $("td").mousedown(function(){
+        pressed_mouse = true;
         time = $(this).text();
         
         if($(this).hasClass("on")){
@@ -165,13 +169,28 @@ $(function(){
         }else{
             // 同じ列でクリックされた以外のセルをonクラスをremove
             $(".on").filter(function(i){
-                return ($(this).text() == time);// && (10-i != note);
+                return ($(this).text() == time);
             }).each(function(){
                 $(this).removeClass().addClass("off");
             });
             $(this).removeClass().addClass("on");
             player.addPattern(time, note);
         }
+    }).mouseenter(function(){
+        if(pressed_mouse){
+            time = $(this).text();
+
+            // 同じ列でクリックされた以外のセルをonクラスをremove
+            $(".on").filter(function(i){
+                return ($(this).text() == time);
+            }).each(function(){
+                $(this).removeClass().addClass("off");
+            });
+            $(this).removeClass().addClass("on");
+            player.addPattern(time, note);
+        }
+    }).mouseup(function(){
+        pressed_mouse = false;
     });
     
     $("#play").bind("mousedown", function(){
@@ -205,10 +224,9 @@ $(function(){
 
 
 
-    var pushing = false;
     $(window).keydown(function(e){
-        if(pushing==false){
-            pushing=true;
+        if(pressed_key==false){
+            pressed_key=true;
             
             if(player.isPlaying()){
                 player.noteOff();
@@ -282,7 +300,7 @@ $(function(){
     });
     
     $(window).keyup(function(){
-        pushing = false;
+        pressed_key = false;
         player.noteOff();
     });
     
