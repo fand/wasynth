@@ -269,19 +269,19 @@ Synth.prototype.initDOM = function(){
             self.setGain();
         });
         
-        // EG init
-        self.canvasEG = $("#canvasEG_"+self.id).get()[0];
-        self.contextEG = self.canvasEG.getContext('2d');
-        $("#EG_"+this.id+" > input").bind("change", function(){
-            self.eg.setParam($(this).attr("name"), parseInt($(this).val()));
-            self.updateCanvas("EG");
-        });
-        
+
         // filter init
         $("#filter_"+self.id).bind("change", function(){
             self.setFilterParam();
         });
 
+        // EG init
+        self.canvasEG = $("#canvasEG_"+self.id).get()[0];
+        self.contextEG = self.canvasEG.getContext('2d');
+        $("#EG_"+self.id+" > input").bind("change", function(){
+            self.eg.setParam($(this).attr("name"), parseInt($(this).val()));
+            self.updateCanvas("EG");
+        });
         
         // filter EG init
         self.canvasFEG = $("#canvasFEG_"+self.id).get()[0];
@@ -349,7 +349,6 @@ Synth.prototype.setEGParam = function(){
     $("#EG_"+this.id+" > input").each(function(){
         self.eg.setParam($(this).attr("name"), parseInt($(this).val()));
     });
-
     this.updateCanvas("EG");
 };
 
