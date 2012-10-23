@@ -91,7 +91,7 @@ Player.prototype.play_seq = function(){
 
 Player.prototype.stop = function(){
     this.is_playing = false;
-    this.position = 0;
+    this.position = this.pattern.length;
     $("#indicator").hide().css("left", "-1000px");
 };
 
