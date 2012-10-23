@@ -5,13 +5,13 @@ var SAMPLE_RATE = 44100;
 
 
 var VCO = function(){
-    this.freq_base = 55;
+    this.freq_key = 55;
     this.shape = "SINE";
     this.octave = 4;
     this.interval = 0;
     this.fine = 0;
     this.note = 0;
-    this.freq = Math.pow(2, this.octave) * this.freq_base;
+    this.freq = Math.pow(2, this.octave) * this.freq_key;
 
     // 44100 / freq = 1周期当りのサンプル数
     this.period_sample = SAMPLE_RATE / this.freq;
@@ -43,10 +43,14 @@ VCO.prototype.setFreq = function(){
     this.freq =
         Math.pow(2, this.octave)
         * Math.pow(SEMITONE, this.interval+this.note)
-        * this.freq_base
+        * this.freq_key
         + this.fine;
     this.period_sample = SAMPLE_RATE / this.freq;
     this.d_phase = (2.0 * Math.PI) / this.period_sample;
+};
+
+VCO.prototype.setKey = function(k){
+    this.freq_key = k;
 };
 
 VCO.prototype.sine = function(){
@@ -243,6 +247,7 @@ var Synth = function(ctx, id){
     this.vco_res.setShape("NOISE");
 
     this.ratio = 1.0;
+    this.freq_key = 0;
     this.is_playing = false;
 
 
@@ -340,6 +345,7 @@ Synth.prototype.setVCOParam = function(){
         this.vco[i].setOctave($("#octave"+s).val());
         this.vco[i].setInterval($("#interval"+s).val());
         this.vco[i].setFine(parseInt($("#fine"+s).val()));
+        this.vco[i].setKey(this.freq_key);
         this.vco[i].setFreq();
     }
 };
@@ -436,6 +442,13 @@ Synth.prototype.noteOff = function(){
             data_R[i] = s[i];
         }
     };
+};
+
+Synth.prototype.setKey = function(freq_key){
+    this.freq_key = freq_key
+    for(var i=0; i<this.vco.length; i++){
+        this.vco[i].setKey(freq_key);
+    }
 };
 
 Synth.prototype.setScale = function(scale){

@@ -1,4 +1,18 @@
 var SEMITONE = 1.05946309;
+var KEY_LIST = {
+    "A": 55,
+    "Bb": 58.27047018976124,
+    "B": 61.7354126570155,
+    "C": 32.70319566257483,
+    "Db": 34.64782887210901,
+    "D": 36.70809598967594,
+    "Eb": 38.890872965260115,
+    "E": 41.20344461410875,
+    "F": 43.653528929125486,
+    "Gb": 46.2493028389543,
+    "G": 48.999429497718666,
+    "Ab": 51.91308719749314
+};
 var SCALE_LIST = {
     "IONIAN": [0,2,4,5,7,9,11,12,14,16],
     "DORIAN": [0,2,3,5,7,9,10,12,14,15],
@@ -16,6 +30,7 @@ var SAMPLE_RATE = 44100;
 var Player = function(){
     this.bpm = 120;
     this.duration = 500; // msec
+    this.freq_key = 55;
     this.scale = [];
     this.setBPM();
     this.setScale();
@@ -41,6 +56,13 @@ var Player = function(){
 Player.prototype.setBPM = function(){
     this.bpm = $("#control [name=bpm]").val();
     this.duration = 15.0 / this.bpm* 1000; // msec
+};
+
+Player.prototype.setKey = function(){
+    this.freq_key = KEY_LIST[$("#key").val()];
+    for(var i=0; i<this.synth.length; i++){
+        this.synth[i].setKey(this.freq_key);
+    }
 };
 
 Player.prototype.setScale = function(){
@@ -150,6 +172,11 @@ $(function(){
 
     var pressed_key = false;
     var pressed_mouse = false;
+
+    player.setBPM();
+    player.setKey();
+    player.setScale();
+
     
     $("td").each(function(){
         $(this).addClass("off");
@@ -219,6 +246,7 @@ $(function(){
 
     $("#control").bind("change", function(){
         player.setBPM();
+        player.setKey();
         player.setScale();
     });
 
