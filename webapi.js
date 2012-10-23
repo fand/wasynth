@@ -137,7 +137,7 @@ Player.prototype.getPattern = function(){
 $(function(){
     $("#twitter").socialbutton('twitter', {
         button: 'horizontal',
-        text: 'Web Audio API Sequencer http://gmork.in/waaseq/'
+        text: 'Web Audio API Sequencer http://www.kde.cs.tsukuba.ac.jp/~fand/wasynth/'
     });
     $("#hatena").socialbutton('hatena');
     $("#facebook").socialbutton('facebook_like', {

@@ -258,39 +258,39 @@ Synth.prototype.initDOM = function(){
     this.root = $("#synth"+this.id);
 
     var self = this;
-    this.root.load("./synth.html", function(){
+    this.root.load("./synth.php?track_id="+this.id, function(){
 
         // vco init
-        self.root.find("[name=vco0]").bind("change", function(){
+        $("#vco0_"+self.id).bind("change", function(){
             self.setVCOParam();
         });    
-        self.root.find("[name=vco1]").bind("change", function(){
+        $("#vco0_"+self.id).bind("change", function(){
             self.setVCOParam();
         });
     
         // mixer init
-        self.root.find("[name=mixer]").bind("change", function(){
+        $("#mixer_"+self.id).bind("change", function(){
             self.setGain();
         });
         
         // EG init
-        self.canvasEG = self.root.find("[name=EG] > canvas").get()[0];
+        self.canvasEG = $("#canvasEG_"+self.id).get()[0];
         self.contextEG = self.canvasEG.getContext('2d');
-        self.root.find("[name=EG] > input").bind("change", function(){
+        $("#EG_"+this.id+" > input").bind("change", function(){
             self.eg.setParam($(this).attr("name"), parseInt($(this).val()));
             self.updateCanvas("EG");
         });
         
         // filter init
-        self.root.find("[name=filter]").bind("change", function(){
+        $("#filter_"+self.id).bind("change", function(){
             self.setFilterParam();
         });
 
         
         // filter EG init
-        self.canvasFEG = self.root.find("[name=FEG] > canvas").get()[0];
+        self.canvasFEG = $("#canvasFEG_"+self.id).get()[0];
         self.contextFEG = self.canvasFEG.getContext('2d');
-        self.root.find("[name=FEG] > input").bind("change", function(){
+        $("#FEG_"+self.id+" > input").bind("change", function(){
             self.feg.setParam($(this).attr("name"), parseInt($(this).val()));
             self.updateCanvas("FEG");
         });
@@ -339,18 +339,18 @@ Synth.prototype.setParam = function(){
 
 Synth.prototype.setVCOParam = function(){
     for(var i=0; i<this.vco.length; i++){
-        var node = this.root.find("[name=vco"+i+"]");
-        this.vco[i].setShape(node.find(".shape").val());
-        this.vco[i].setOctave(node.find(".octave").val());
-        this.vco[i].setInterval(node.find(".interval").val());
-        this.vco[i].setFine(parseInt(node.find(".fine").val()));
+        var s = i+"_"+this.id;
+        this.vco[i].setShape($("#shape"+s).val());
+        this.vco[i].setOctave($("#octave"+s).val());
+        this.vco[i].setInterval($("#interval"+s).val());
+        this.vco[i].setFine(parseInt($("#fine"+s).val()));
         this.vco[i].setFreq();
     }
 };
 
 Synth.prototype.setEGParam = function(){
     var self = this;
-    this.root.find("[name=EG] > input").each(function(){
+    $("#EG_"+this.id+" > input").each(function(){
         self.eg.setParam($(this).attr("name"), parseInt($(this).val()));
     });
 
@@ -360,23 +360,21 @@ Synth.prototype.setEGParam = function(){
 
 Synth.prototype.setFEGParam = function(){
     var self = this;
-    this.root.find("[name=FEG] > input").each(function(){
+    $("#FEG_"+this.id+" > input").each(function(){
         self.feg.setParam($(this).attr("name"), parseInt($(this).val()));
     });
     this.updateCanvas("FEG");
 };
 
 Synth.prototype.setFilterParam = function(){
-    var node = this.root.find("[name=filter]");
-    this.filter.setFreq(node.find("[name=freq]").val());
-    this.filter.setQ(node.find("[name=Q]").val());
-    this.filter.setResonance(node.find("[name=resonance]").val());
+    this.filter.setFreq($("#freq_"+this.id).val());
+    this.filter.setQ($("#Q_"+this.id).val());
+    this.filter.setResonance($("#resonance_"+this.id).val());
 };
 
 Synth.prototype.setGain = function(){
-    var mixer = this.root.find("[name=mixer]");
     for(var i=0; i<this.gain.length; i++){
-        this.gain[i] = parseInt(mixer.find("[name=vol"+i+"]").val()) / 100.0;
+        this.gain[i] = parseInt($("#vol"+i+"_"+this.id).val()) / 100.0;
     }
 };
 
@@ -426,7 +424,6 @@ Synth.prototype.noteOn = function(){
             data_R[i] = s[i];
         }
     };
-  
 };
 
 Synth.prototype.noteOff = function(){
@@ -445,7 +442,6 @@ Synth.prototype.noteOff = function(){
             data_R[i] = s[i];
         }
     };
-    
 };
 
 Synth.prototype.setScale = function(scale){
