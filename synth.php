@@ -4,7 +4,7 @@
 $html = <<<EOT
 <fieldset id="vco0_{$id}" class="RS_module RS_vco0">
   <legend>OSC1</legend>
-  WAVE <select class="shape">
+  WAVE <select id="shape0_{$id}">
     <option>SINE</option>
     <option>TRIANGLE</option>
     <option>SAW</option>
