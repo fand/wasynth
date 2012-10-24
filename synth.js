@@ -188,7 +188,6 @@ var ResFilter = function(ctx){
 
     this.freq_min = 80;
     this.freq = 5000;
-    this.vivid = 0;
     this.resonance = 10;
     this.Q = 10;
 };
@@ -210,12 +209,7 @@ ResFilter.prototype.getResonance = function(){
 };
 
 ResFilter.prototype.setFreq = function(freq){
-    this.freq = freq - this.freq_min;
-};
-
-ResFilter.prototype.setVivid = function(vivid){
-//    this.vivid = vivid;
-//    this.lpf.gain.value = this.vivid - 50;
+    this.freq = Math.pow(freq/1000, 2.0)*25000;
 };
 
 ResFilter.prototype.setQ = function(q){

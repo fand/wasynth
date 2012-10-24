@@ -63,7 +63,7 @@ $html = <<<EOT
 <fieldset id="filter_{$id}" class="RS_module RS_filter clearfix">
   <legend>Filter</legend>
   <div class="RS_filter_freq">
-  FREQ <br><input id="freq_{$id}" class="filter_slider" type="range" min="60" max="20000" value="5000"><br>
+  FREQ <br><input id="freq_{$id}" class="filter_slider" type="range" min="10" max="1000" value="400"><br>
   </div>
   <div class="RS_filter_Q">
   REZ <br><input id="Q_{$id}" class="filter_slider" type="range" min="0" max="40" value="6"><br>
