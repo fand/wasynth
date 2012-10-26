@@ -3,6 +3,10 @@
     -webkit-user-select:none;
 }
 
+html{
+    overflow: hidden;
+}
+
 #social{
     position: absolute;
     text-align: right;
@@ -11,6 +15,143 @@
 }
 .social{
     float: left;
+}
+
+
+#wrapper{
+    position: absolute;
+    display: block;    
+
+    width: 910px;
+    height: 590px;
+
+    margin: 0px;
+    padding: 0px;
+
+    margin-left: -460px;
+    margin-top: -300px;
+
+    left: 50%;
+    top: 50%;
+
+    background-color: #fff;
+    border: 1px solid #0df;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+
+.move{
+    position: absolute;
+    display: block;
+
+    color: #fff;
+    line-height: 16px;
+    font-size: 16px;
+    font-weight: 100;
+
+    -webkit-opacity: 0.3;
+    opacity: 0.3;
+
+    z-index:10;
+}
+.move:hover{
+    color: #ddd;
+    -webkit-opacity: 1.0;
+    opacity: 1.0;
+}
+
+.arrow{
+    position: absolute;
+    display: inline;
+    content: "";
+    
+    border: 20px solid #000;
+    border-color:transparent;
+}
+
+#move_top{
+    width: 70px;
+    height: 20px;
+    top: -340px;
+    left: 400px;
+    padding-top:300px;
+}
+#move_top > .arrow{
+    left: 30px;
+    border-bottom-color: #eee;
+    bottom: 0px;
+}
+
+#move_bottom{
+    width: 70px;
+    height: 20px;
+    bottom: -330px;
+    left: 400px;
+    padding-bottom: 300px;
+}
+#move_bottom > .arrow{
+    left:30px;
+    border-top-color: #eee;
+    top: 0px;
+}
+
+#move_left{
+    width:100px;
+    height:100px;
+    left:-1100px;
+    top: 140px;
+    padding: 100px 10px 100px 1000px;
+    text-align: center;
+}
+#move_left > .arrow{
+    border-right-color: #eee;
+    top: 150px;
+    right: 55px;
+}
+
+#move_right{
+    width:100px;
+    height:100px;
+    right: -1100px;
+    top: 140px;
+    padding: 100px 1000px 100px 10px;
+    text-align: center;
+}
+#move_right > .arrow{
+    border-left-color: #eee;
+    top: 150px;
+    left: 55px;
+}
+
+
+/************************************************/
+/*                                              */
+/*              sequencer mode                  */
+/*                                              */
+/************************************************/
+
+#sequencer{
+
+    
+}
+
+
+#control{
+    position: absolute;
+    margin:0px;
+    padding: 10px 30px;
+    top: -1px;
+    left: -1px;
+    width: 850px;
+    height: 20px;
+    color: #0df;
+
+    border: 1px solid #0df;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 table{
@@ -48,7 +189,7 @@ tr{
   padding:0px;
   min-width: 700px;
   min-height: 20px;
-  height:26px;
+  height:21px;
   width: 910px;
 }
 th{
@@ -57,10 +198,10 @@ th{
   margin: 0px;
   padding: 0px;
   width: 60px;
-  height: 23px;
+  height: 18px;
   min-width: 18px;
   min-height:18px;
-  line-height: 20px;
+  line-height: 18px;
   font-size: 10px;
   font-weight:100;
   color:#888;
@@ -184,47 +325,6 @@ td{
 
 td:hover{
     box-shadow:0px 0px 5px rgb(0,255,255);
-}
-
-#wrapper{
-    position: absolute;
-    display: block;    
-
-    width: 910px;
-    height: 590px;
-
-    margin: 0px;
-    padding: 0px;
-
-    margin-left: -470px;
-    margin-top: -300px;
-
-    left: 50%;
-    top: 50%;
-
-    background-color: #fff;
-    border: 1px solid #0df;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-
-}
-
-#control{
-    position: absolute;
-    margin:0px;
-    padding: 10px 30px;
-    top: -1px;
-    left: -1px;
-    width: 850px;
-    height: 20px;
-    color: #0df;
-
-    background-color: #fff;
-    border: 1px solid #adf;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
 }
 
 #instruments{
@@ -353,5 +453,12 @@ legend{
     margin-top: 140px;
     -webkit-transform-origin: 22% 100%;
     -webkit-transform: rotate(270deg);
-    /*translate(0px, 20px),*/
 }
+
+
+
+/************************************************/
+/*                                              */
+/*                mixer mode                    */
+/*                                              */
+/************************************************/
