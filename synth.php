@@ -1,6 +1,10 @@
 <?php
    $id = $_GET["track_id"];
 
+   if(!is_numeric($id)){
+     $id = 0;
+   }
+   
 $html = <<<EOT
 <fieldset id="vco0_{$id}" class="RS_module RS_vco0">
   <legend>OSC1</legend>
