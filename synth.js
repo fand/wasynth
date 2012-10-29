@@ -481,41 +481,54 @@ var Sequencer = function(track, id){
     this.pressed_mouse = false;
     this.pressed_key = false;
 
-    // pattern = [patter_num][time][]
-    // [note,duration]で一つのtone
-    this.pattern = [[[0,0]]];
+    // 自然数ならnote, 0ならoff, -1ならextend
+    this.pattern = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    this.pattern_array = [this.pattern];
     this.pattern_num = 0;
 
-
-    // 自然数ならnote, 0ならoff, -1ならextend
-    this.glue_pattern = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    this.glue = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     this.glue_start = 0;
     this.glue_end = 0;
+    
+    // sequence = [patter_num][time][]
+    // [note,duration]で一つのtone
+    this.sequence = [[0,0]];
 };
 
-Sequencer.prototype.addNote = function(time, note, duration){
-    this.pattern[this.pattern_num][time] = [note, duration];
-    this.glue_pattern[time] = note;
-    for(var i=1; i<duration; i++){
-        this.glue_pattern[time + i] = -1;
+Sequencer.prototype.addNote = function(time, note){
+
+    if(this.pattern[time] == -1 && this.pattern[time+1] == -1){
+        var i= time-1;
+        while(i>0 || this.glue_pattern[i] > 0){
+            i -= 1;
+        }
+        this.pattern[time+1] = this.pattern[i];
     }
+    if(this.pattern[time] > 0 && this.pattern[time+1] == -1){
+        this.pattern[time+1] = this.pattern[time];
+    }
+
+    this.pattern[time] = note;
+
+
 };
 
 Sequencer.prototype.removeNote = function(time){
-    this.pattern[this.pattern_index][time] = [0, 0];
+    this.addNote(time, 0);
 
-    if(this.glue_pattern[time] > 0){
-        
-    }
+    this.drawGlue();
 };
 
 Sequencer.prototype.extendNote = function(time, note, duration){
-    this.pattern[this.pattern_index][time][2] = duration;
-    
-    this.glue_pattern[time] = note;
+    this.pattern[time] = note;
     for(var i=1; i<duration; i++){
         this.glue_pattern[i] = -1;
     }
+};
+
+Sequencer.prototype.generatePattern = function(){
+    
+    
 };
 
 Sequencer.prototype.getCurrentPattern = function(num){
@@ -532,68 +545,115 @@ Sequencer.prototype.drawGlue = function(){
     var offset = $("#editor").offset();
 
     $("#editor > div.glue_over").remove();
+    $("div.glue_hidden").removeClass("glue_hidden");
+    $("div.on").removeClass("on");
 
-    for(var i=0; i< this.glue_pattern.length; i++){
-        if(this.glue_pattern[i] > 0){
+    for(var i=0; i< this.pattern.length; i++){
+        if(this.pattern[i] > 0){
             var w = 0;
-            while(this.glue_pattern[i+w]<-1){ w++;}
-            
-            var row = $("tr[note=" + this.glue_pattern[i] + "] > td > div");    
-            var x_cell = row.eq(i).offset().left - 2;
-            var w_cell = row.eq(i+w).offset().left - x_cell +18;
-            var y_cell = row.offset().top - 2;
-            var over = $("<div class='glue_over' start='"+
-                         self.glue_start + "' end='"+
-                         self.glue_end + "'></div>")
+            while(this.pattern[i+w+1] == -1){ w++;}
+
+            var target = $("#"+this.pattern[i]+"_"+i+"_"+this.id);
+            var x_cell = target.offset().left;
+            var w_cell = w*26 +20;
+            var y_cell = target.offset().top;
+
+            var over = $("<div class='glue_over'></div>")
                 .css({
-                    "left": (x_cell - offset.left) + "px",
-                    "top": y_cell - offset.top  + "px",
+                    "left": (x_cell - offset.left -2) + "px",
+                    "top": (y_cell - offset.top -2)  + "px",
                     "width": w_cell + "px"
                 });
-            over.mouseup(function(){
-                self.pressed_mouse = false;
-                self.glue_start = 100;
-                self.glue_end = 0;
-            });
+
 
             $("#editor").append(over);
+            for(var j=0; j< w+1; j++){
+                target.addClass("glue_hidden");
+                target = target.next();
+                this.glue[i+j] = over;
+            }
         }
     }
 };
 
 Sequencer.prototype.setEditMode = function(s){
+    this.synchronizeTable();
     this.edit_mode = s;
+};
+
+// pencilでぐちゃぐちゃすると、内部patternと表示が食い違うことがある
+// だから一致させてあげる必要がある
+Sequencer.prototype.synchronizeTable = function(){
+    var self = this;
+    $("div.on").each(function(){
+        if(self.pattern[$(this).text()]){
+
+        }
+    });
+
+    
+};
+
+Sequencer.prototype.removeGlue = function(time){
+    if(this.glue[time]){
+        var start = time;
+        while(this.glue[start-1] == this.glue[start]){
+            start--;
+        }
+        var end = time;
+        while(this.glue[end+1] == this.glue[end]){
+            end++;
+        }
+
+        $("div.glue_hidden").filter(function(){
+            return ($(this).text() >= start && $(this).text() <= end);
+        }).removeClass("glue_hidden");
+        
+        this.glue[time].remove();
+    }
 };
 
 Sequencer.prototype.clickCell = function(cell){
 
     var self = this;
-    var time = cell.text();
-    
+    var time = parseInt(cell.text());
+
+    self.glue_start = parseInt(time);
+    self.glue_end = parseInt(time);
+
     switch(self.edit_mode){
-    case "glue":  // breakは付けない
-        self.glue_start = parseInt(time);
-        self.glue_end = parseInt(time);
     case "pencil":
-        if(cell.hasClass("on")){
-            cell.removeClass("on").addClass("off");
-            cell.removeNote(time);
-        }else{
-            // 同じ列でクリックされた以外のセルをonクラスをremove
-            $("div.on").filter(function(){
-                return ($(this).text() == time);
-            }).each(function(){
-                $(this).removeClass("on").addClass("off");
-            });
-            cell.removeClass("off").addClass("on");
-            self.addNote(time, self.mouse_note, 1);
+        for(var i=1; i<11; i++){
+            $("#" + i + "_" + time + "_" + self.id).removeClass("on");
         }
+        cell.addClass("on");
+        self.removeGlue(time);
+        self.addNote(time, self.mouse_note);
+        break;
+
+    case "glue":
+        if(self.pattern[time+1] == -1){
+            if(self.pattern[time] == -1){
+                var i = time;
+                while(self.pattern[i] == -1){ i--;}
+                if(self.pattern[i] != self.mouse_note){
+                    self.pattern[time+1] = self.pattern[i];
+                    self.pattern[time] = self.mouse_note;
+                }
+            }else{
+                self.pattern[time+1] = self.pattern[time];
+                self.pattern[time] = self.mouse_note;
+            }
+        }else if(self.pattern[time] == self.mouse_note){
+            // do nothing
+        }else{
+            self.addNote(time, self.mouse_note);
+        }
+        self.drawGlue();
         break;
         
     case "erase":
-        if(cell.hasClass("on")){
-            cell.removeClass("on").addClass("off");
-        }
+        self.removeNote(time);
         break;
     }
 };
@@ -601,49 +661,61 @@ Sequencer.prototype.clickCell = function(cell){
 Sequencer.prototype.dragCell = function(cell){
 
     var self = this;
-    var time = cell.text();
+    var time = parseInt(cell.text());
     
     switch (self.edit_mode){
     case "pencil":
-        // 同じ列でクリックされた以外のセルをonクラスをremove
-        $("div.on").filter(function(){
-            return ($(this).text() == time);
-        }).each(function(){
-            $(this).removeClass("on").addClass("off");
-            self.removeNote(time);
-        });
-        cell.removeClass("off").addClass("on");
-        self.addNote(time, self.mouse_note, 1);
+        
+        for(var i=1; i<11; i++){
+            $("#" + i + "_" + time + "_" + self.id).removeClass("on");
+        }
+        this.removeGlue(time);
+        cell.addClass("on");
+        
+        self.addNote(time, self.mouse_note);
         break;
         
     case "glue":
-        $("#control_"+self.id).text(this.glue_pattern);
         // 同じ列でクリックされた以外のセルをonクラスをremove
         $("div.on").filter(function(){
             return ($(this).text() == time);
         }).each(function(){
-            $(this).removeClass("on").addClass("off");
+            $(this).removeClass("on");
         });
         
         if(time < self.glue_start){
-            self.glue_start = parseInt(time);
+            self.glue_start = time;
         }
         if(self.mouse_time > self.glue_end){
-            self.glue_end = parseInt(time);
+            self.glue_end = time;
         }
 
-        if(self.glue_pattern[time] > 0 && self.glue_pattern[time+1] == -1 && time > self.glue_start){
-            self.glue_pattern[time+1] = self.glue_pattern[time];
-            self.glue_pattern[time] = -1;
-            self.drawGlue();
+        // 既存のパターンに左から突っ込む
+        if(self.pattern[time] > 0 && self.pattern[time+1] == -1 && time > self.glue_start){
+            self.pattern[time+1] = self.pattern[time];
+            self.pattern[time] = -1;
+        }else if(time == self.glue_start){
+            // 右から突っ込む
+            self.pattern[time] = self.mouse_note;
+            self.pattern[time+1] = -1;
+        }else{
+            self.pattern[time] = -1;
         }
+        
 
+        self.drawGlue();
         break;
         
     case "erase":
         if(cell.hasClass("on")){
-            cell.removeClass("on").addClass("off");
+            cell.removeClass("on");
         }
+    }
+};
+
+Sequencer.prototype.releaseCell = function(cell){
+    if(this.edit_mode=="pencil"){
+        this.synchronizeTable();
     }
 };
 
@@ -660,10 +732,7 @@ Sequencer.prototype.initDOM = function(){
         self.glue_end = 0;
     });
 
-    $("div.cell_seq").each(function(){
-        $(this).addClass("off");
-    });
-        
+    
     $("div.cell_seq").mousedown(function(){
         self.pressed_mouse = true;
         self.mouse_time = $(this).text();
@@ -674,6 +743,7 @@ Sequencer.prototype.initDOM = function(){
             self.dragCell($(this));
         }
     }).mouseup(function(){
+        self.releaseCell($(this));
         self.pressed_mouse = false;
         self.glue_start = 100;
         self.glue_end = 0;
@@ -681,12 +751,12 @@ Sequencer.prototype.initDOM = function(){
     
     $("th").mouseenter(function(){
         var note = $(this).parent().eq(0).attr("note");
-        self.synth.setNote(self.track.player.intervalToSemitone(note));
-        if(pressed_mouse){
+        self.track.synth.setNote(self.track.player.intervalToSemitone(note));
+        if(self.pressed_mouse){
             self.synth.noteOn();
         }
     }).mousedown(function(){
-        pressed_mouse = true;
+        self.pressed_mouse = true;
         self.synth.setNote(self.track.player.intervalToSemitone(self.mouse_note));
         self.synth.noteOn();
     }).mouseup(function(){
