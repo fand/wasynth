@@ -226,7 +226,7 @@ ResFilter.prototype.update = function(){
 
 var Synth = function(ctx, id){
     this.id = id;
-    
+
     this.node = ctx.createJavaScriptNode(STREAM_LENGTH, 1,2);
     this.vco = [new VCO(),new VCO(),new VCO()];
     this.gain = [1.0, 1.0, 1.0];
@@ -243,56 +243,49 @@ var Synth = function(ctx, id){
     this.ratio = 1.0;
     this.freq_key = 0;
     this.is_playing = false;
-
-
-    this.initDOM();
 }
 
 Synth.prototype.initDOM = function(){
-    $("#instruments").append('<div id="synth'+ this.id + '" class="instrument clearfix"> </div>');
-    this.root = $("#synth"+this.id);
 
+    this.root = $("#panel_"+this.id);
     var self = this;
-    this.root.load("./synth.php?track_id="+this.id, function(){
-
-        // vco init
-        $("#vco0_"+self.id).bind("change", function(){
-            self.setVCOParam();
-        });    
-        $("#vco1_"+self.id).bind("change", function(){
-            self.setVCOParam();
-        });
     
-        // mixer init
-        $("#mixer_"+self.id).bind("change", function(){
-            self.setGain();
-        });
-        
-
-        // filter init
-        $("#filter_"+self.id).bind("change", function(){
-            self.setFilterParam();
-        });
-
-        // EG init
-        self.canvasEG = $("#canvasEG_"+self.id).get()[0];
-        self.contextEG = self.canvasEG.getContext('2d');
-        $("#EG_"+self.id+" > input").bind("change", function(){
-            self.eg.setParam($(this).attr("name"), parseInt($(this).val()));
-            self.updateCanvas("EG");
-        });
-        
-        // filter EG init
-        self.canvasFEG = $("#canvasFEG_"+self.id).get()[0];
-        self.contextFEG = self.canvasFEG.getContext('2d');
-        $("#FEG_"+self.id+" > input").bind("change", function(){
-            self.feg.setParam($(this).attr("name"), parseInt($(this).val()));
-            self.updateCanvas("FEG");
-        });
-        
-        self.setParam();
+    // vco init
+    $("#vco0_"+self.id).bind("change", function(){
+        self.setVCOParam();
+    });    
+    $("#vco1_"+self.id).bind("change", function(){
+        self.setVCOParam();
     });
-
+    
+    // mixer init
+    $("#mixer_"+self.id).bind("change", function(){
+        self.setGain();
+    });
+    
+    
+    // filter init
+    $("#filter_"+self.id).bind("change", function(){
+        self.setFilterParam();
+    });
+    
+    // EG init
+    self.canvasEG = $("#canvasEG_"+self.id).get()[0];
+    self.contextEG = self.canvasEG.getContext('2d');
+    $("#EG_"+this.id+" > input").bind("change", function(){
+        self.eg.setParam($(this).attr("name"), parseInt($(this).val()));
+        self.updateCanvas("EG");
+    });
+    
+    // filter EG init
+    self.canvasFEG = $("#canvasFEG_"+self.id).get()[0];
+    self.contextFEG = self.canvasFEG.getContext('2d');
+    $("#FEG_"+self.id+" > input").bind("change", function(){
+        self.feg.setParam($(this).attr("name"), parseInt($(this).val()));
+        self.updateCanvas("FEG");
+    });
+    
+    self.setParam();
 };
 
 Synth.prototype.updateCanvas = function(name){
@@ -464,4 +457,333 @@ Synth.prototype.setNote = function(note){
         this.vco[i].setFreq();
     }
 };
+
+Synth.prototype.reflectParam = function(){
+
+
     
+};
+
+
+
+var Sampler = function(){
+
+};
+
+
+
+var Sequencer = function(track, id){
+    this.track = track;
+    this.id = id;
+    this.edit_mode = "pencil";
+    this.mouse_note = 0;
+    this.mouse_time = 0;
+    this.pressed_mouse = false;
+    this.pressed_key = false;
+
+    // pattern = [patter_num][time][]
+    // [note,duration]で一つのtone
+    this.pattern = [[[0,0]]];
+    this.pattern_num = 0;
+
+
+    // 自然数ならnote, 0ならoff, -1ならextend
+    this.glue_pattern = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    this.glue_start = 0;
+    this.glue_end = 0;
+};
+
+Sequencer.prototype.addNote = function(time, note, duration){
+    this.pattern[this.pattern_num][time] = [note, duration];
+    this.glue_pattern[time] = note;
+    for(var i=1; i<duration; i++){
+        this.glue_pattern[time + i] = -1;
+    }
+};
+
+Sequencer.prototype.removeNote = function(time){
+    this.pattern[this.pattern_index][time] = [0, 0];
+
+    if(this.glue_pattern[time] > 0){
+        
+    }
+};
+
+Sequencer.prototype.extendNote = function(time, note, duration){
+    this.pattern[this.pattern_index][time][2] = duration;
+    
+    this.glue_pattern[time] = note;
+    for(var i=1; i<duration; i++){
+        this.glue_pattern[i] = -1;
+    }
+};
+
+Sequencer.prototype.getCurrentPattern = function(num){
+    return this.pattern[num];
+};
+
+Sequencer.prototype.setPatternNumber = function(num){
+    this.pattern_num = num;
+};
+
+Sequencer.prototype.drawGlue = function(){
+
+    var self = this;
+    var offset = $("#editor").offset();
+
+    $("#editor > div.glue_over").remove();
+
+    for(var i=0; i< this.glue_pattern.length; i++){
+        if(this.glue_pattern[i] > 0){
+            var w = 0;
+            while(this.glue_pattern[i+w]<-1){ w++;}
+            
+            var row = $("tr[note=" + this.glue_pattern[i] + "] > td > div");    
+            var x_cell = row.eq(i).offset().left - 2;
+            var w_cell = row.eq(i+w).offset().left - x_cell +18;
+            var y_cell = row.offset().top - 2;
+            var over = $("<div class='glue_over' start='"+
+                         self.glue_start + "' end='"+
+                         self.glue_end + "'></div>")
+                .css({
+                    "left": (x_cell - offset.left) + "px",
+                    "top": y_cell - offset.top  + "px",
+                    "width": w_cell + "px"
+                });
+            over.mouseup(function(){
+                self.pressed_mouse = false;
+                self.glue_start = 100;
+                self.glue_end = 0;
+            });
+
+            $("#editor").append(over);
+        }
+    }
+};
+
+Sequencer.prototype.setEditMode = function(s){
+    this.edit_mode = s;
+};
+
+Sequencer.prototype.clickCell = function(cell){
+
+    var self = this;
+    var time = cell.text();
+    
+    switch(self.edit_mode){
+    case "glue":  // breakは付けない
+        self.glue_start = parseInt(time);
+        self.glue_end = parseInt(time);
+    case "pencil":
+        if(cell.hasClass("on")){
+            cell.removeClass("on").addClass("off");
+            cell.removeNote(time);
+        }else{
+            // 同じ列でクリックされた以外のセルをonクラスをremove
+            $("div.on").filter(function(){
+                return ($(this).text() == time);
+            }).each(function(){
+                $(this).removeClass("on").addClass("off");
+            });
+            cell.removeClass("off").addClass("on");
+            self.addNote(time, self.mouse_note, 1);
+        }
+        break;
+        
+    case "erase":
+        if(cell.hasClass("on")){
+            cell.removeClass("on").addClass("off");
+        }
+        break;
+    }
+};
+
+Sequencer.prototype.dragCell = function(cell){
+
+    var self = this;
+    var time = cell.text();
+    
+    switch (self.edit_mode){
+    case "pencil":
+        // 同じ列でクリックされた以外のセルをonクラスをremove
+        $("div.on").filter(function(){
+            return ($(this).text() == time);
+        }).each(function(){
+            $(this).removeClass("on").addClass("off");
+            self.removeNote(time);
+        });
+        cell.removeClass("off").addClass("on");
+        self.addNote(time, self.mouse_note, 1);
+        break;
+        
+    case "glue":
+        $("#control_"+self.id).text(this.glue_pattern);
+        // 同じ列でクリックされた以外のセルをonクラスをremove
+        $("div.on").filter(function(){
+            return ($(this).text() == time);
+        }).each(function(){
+            $(this).removeClass("on").addClass("off");
+        });
+        
+        if(time < self.glue_start){
+            self.glue_start = parseInt(time);
+        }
+        if(self.mouse_time > self.glue_end){
+            self.glue_end = parseInt(time);
+        }
+
+        if(self.glue_pattern[time] > 0 && self.glue_pattern[time+1] == -1 && time > self.glue_start){
+            self.glue_pattern[time+1] = self.glue_pattern[time];
+            self.glue_pattern[time] = -1;
+            self.drawGlue();
+        }
+
+        break;
+        
+    case "erase":
+        if(cell.hasClass("on")){
+            cell.removeClass("on").addClass("off");
+        }
+    }
+};
+
+Sequencer.prototype.initDOM = function(){
+
+    var self = this;
+
+    // table init
+    $("tr").mouseenter(function(event){
+        self.mouse_note = $(this).attr("note");
+    }).mouseup(function(){
+        self.pressed_mouse = false;
+        self.glue_start = 100;
+        self.glue_end = 0;
+    });
+
+    $("div.cell_seq").each(function(){
+        $(this).addClass("off");
+    });
+        
+    $("div.cell_seq").mousedown(function(){
+        self.pressed_mouse = true;
+        self.mouse_time = $(this).text();
+        self.clickCell($(this));
+    }).mouseenter(function(){
+        if(self.pressed_mouse){
+            self.mouse_time = $(this).text();
+            self.dragCell($(this));
+        }
+    }).mouseup(function(){
+        self.pressed_mouse = false;
+        self.glue_start = 100;
+        self.glue_end = 0;
+    });
+    
+    $("th").mouseenter(function(){
+        var note = $(this).parent().eq(0).attr("note");
+        self.synth.setNote(self.track.player.intervalToSemitone(note));
+        if(pressed_mouse){
+            self.synth.noteOn();
+        }
+    }).mousedown(function(){
+        pressed_mouse = true;
+        self.synth.setNote(self.track.player.intervalToSemitone(self.mouse_note));
+        self.synth.noteOn();
+    }).mouseup(function(){
+        self.pressed_mouse = false;
+        self.synth.noteOff();
+    });
+
+    $("#pencil_"+self.id).click(function(){
+        self.setEditMode("pencil");
+    });
+    $("#glue_"+self.id).click(function(){
+        self.setEditMode("glue");
+    });
+    $("#erase_"+self.id).click(function(){
+        self.setEditMode("erase");
+    });
+};
+
+
+/////////////////////////////////////////////
+// Trackオブジェクト
+// synth, sequencer, fxをメンバに持つ
+// synthを継承するよりこっちのほうが楽？
+
+var Track = function(player, ctx, id, type){
+    this.player = player;
+    this.id = id;
+    this.synth;
+    if(type == "synth"){
+        this.synth = new Synth(ctx, id);
+    }else if(type == "sampler"){
+        this.synth = new Sampler();
+    }
+
+    this.fx = [];
+    
+    this.sequencer = new Sequencer(this, id);
+    
+    this.initDOM();
+};
+
+Track.prototype.initDOM = function(){
+    $("#instruments").append('<div id="track_'+ this.id + '" class="track"> </div>');
+    this.root = $("#track_"+this.id);
+
+    var self = this;
+    this.root.load("./synth.php?track_id="+this.id, function(){
+
+        $("#play_"+self.id).on("mousedown", function(){
+            if(self.player.isPlaying()){
+                self.player.pause();
+                $(this).attr("value", "play");
+            }
+            else{
+                self.player.play();
+                $(this).attr("value", "pause");
+            }
+        });
+        
+        $("#stop_"+self.id).on("mousedown", function(){
+            self.player.stop();
+            $("#play").attr("value", "play");
+        });
+    
+
+        $("#control_"+self.id).on("change", function(){
+            self.player.setBPM();
+            self.player.setKey();
+            self.player.setScale();
+        });
+        
+
+        self.sequencer.initDOM();
+        self.synth.initDOM();
+        self.player.init();
+    });
+};
+
+Track.prototype.setKey = function(freq_key){
+    this.synth.setKey(freq_key);
+};
+
+Track.prototype.connect = function(dst){
+    this.synth.connect(dst);
+};
+
+Track.prototype.setNote = function(note){
+    this.synth.setNote(note);
+};
+
+Track.prototype.noteOn = function(){
+    this.synth.noteOn();
+};
+
+Track.prototype.noteOff = function(){
+    this.synth.noteOff();
+};
+
+
+

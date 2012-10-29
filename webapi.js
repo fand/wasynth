@@ -27,6 +27,8 @@ var STREAM_LENGTH = 1024;
 var SAMPLE_RATE = 44100;
 
 
+
+
 var Player = function(){
     this.bpm = 120;
     this.duration = 500; // msec
@@ -36,37 +38,43 @@ var Player = function(){
     this.setScale();
     this.is_playing = false;
     this.position = 0;
-
+    this.current_id = 0;
+    this.id_list = [this.current_id];
 
     this.context = new webkitAudioContext();
     SAMPLE_RATE = this.context.sampleRate;
-    this.synth = [];
-    this.synth.push(new Synth(this.context, 42));
 
-    this.pattern = [8,0,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];    
+    this.track = [];
+    this.track.push(new Track(this, this.context, this.current_id, "synth"));
+    
 //    this.volume = this.context.createGainNode();
 //    this.volume.gain.value = 1.0;
 
-    for(var i=0; i<this.synth.length; i++){
-        this.synth[i].connect(this.context.destination);
+    for(var i=0; i<this.track.length; i++){
+        this.track[i].connect(this.context.destination);
     }
+};
 
+Player.prototype.init = function(){
+    this.setBPM();
+    this.setKey();
+    this.setScale();
 };
 
 Player.prototype.setBPM = function(){
-    this.bpm = $("#control [name=bpm]").val();
+    this.bpm = $("#bpm_"+this.current_id).val();
     this.duration = 15.0 / this.bpm* 1000; // msec
 };
 
 Player.prototype.setKey = function(){
-    this.freq_key = KEY_LIST[$("#key").val()];
-    for(var i=0; i<this.synth.length; i++){
-        this.synth[i].setKey(this.freq_key);
+    this.freq_key = KEY_LIST[$("#key_"+this.current_id).val()];
+    for(var i=0; i<this.track.length; i++){
+        this.track[i].setKey(this.freq_key);
     }
 };
 
 Player.prototype.setScale = function(){
-    this.scale = SCALE_LIST[$("#control [name=mode]").val()];
+    this.scale = SCALE_LIST[$("#mode_"+this.current_id).val()];
 };
 
 Player.prototype.addPattern = function(time, note){
@@ -84,6 +92,8 @@ Player.prototype.isPlaying = function(){
 };
 
 Player.prototype.play = function(pos){
+    this.init();
+    
     this.is_playing = true;
     if(pos!=undefined){
         this.position = pos;
@@ -122,15 +132,15 @@ Player.prototype.pause = function(){
 };
 
 Player.prototype.noteOn = function(note){
-    for(var i=0; i<this.synth.length; i++){
-        this.synth[i].setNote(this.intervalToSemitone(note));
-        this.synth[i].noteOn();
+    for(var i=0; i<this.track.length; i++){
+        this.track[i].setNote(this.intervalToSemitone(note));
+        this.track[i].noteOn();
     }
 };
 
 Player.prototype.noteOff = function(){
-    for(var i=0; i<this.synth.length; i++){
-        this.synth[i].noteOff();
+    for(var i=0; i<this.track.length; i++){
+        this.track[i].noteOff();
     }
 };
 
@@ -138,37 +148,51 @@ Player.prototype.intervalToSemitone  = function(ival){
     return Math.floor((ival-1)/7) * 12 + this.scale[(ival-1) % 7];
 };
 
-Player.prototype.readPattern = function(pat){
+Player.prototype.readPattern = function(track_num, pat){
+    var limit = Math.min(pat.length, this.track.length);
+    
     $(".on").removeClass("on").addClass("off");
-    for(var i=0; i<pat.length; i++){
-        if(pat[i]!=0){
-            $("[note=" + pat[i] + "] *").filter(function(){
+    for(var i=0; i<this.track.length; i++){
+        if(pat[i][0]!=0){
+            $("[note=" + pat[i][0] + "] *").filter(function(){
                 return ($(this).text() == i);
             }).removeClass("off").addClass("on");
         }
     }
-
-    this.pattern = pat;
+    for(var i=0; i<track.length; i++){
+        this.track[i] = pat[i];
+    }
 };
 
-Player.prototype.getPattern = function(){
-    return this.pattern;
+Player.prototype.readMML = function(){
+
+};
+
+Player.prototype.addTrack = function(){
+    
+    this.track.push(new Track);
+
+};
+
+Player.prototype.removeTrack = function(){
+    this.current_id++;
 };
 
 
 $(function(){
-    $("#twitter").socialbutton('twitter', {
-        button: 'horizontal',
-        text: 'Web Audio API Sequencer http://www.kde.cs.tsukuba.ac.jp/~fand/wasynth/'
-    });
-    $("#hatena").socialbutton('hatena');
-    $("#facebook").socialbutton('facebook_like', {
-        button: 'button_count'
-    });
+
+    $("#cover").delay(2000).fadeOut(1000, function(){$(this).remove();});
+    
+    // $("#twitter").socialbutton('twitter', {
+    //     button: 'horizontal',
+    //     text: 'Web Audio API Sequencer http://www.kde.cs.tsukuba.ac.jp/~fand/wasynth/'
+    // });
+    // $("#hatena").socialbutton('hatena');
+    // $("#facebook").socialbutton('facebook_like', {
+    //     button: 'button_count'
+    // });
     
     var player = new Player();
-    var note = 0;
-    var time = 0;
 
     var pressed_key = false;
     var pressed_mouse = false;
@@ -176,82 +200,7 @@ $(function(){
     player.setBPM();
     player.setKey();
     player.setScale();
-
     
-    $("td").each(function(){
-        $(this).addClass("off");
-    });
-  
-    $("tr").bind("mouseenter", function(event){
-        note = $(this).attr("note");
-    });
-    
-    $("td").mousedown(function(){
-        pressed_mouse = true;
-        time = $(this).text();
-        
-        if($(this).hasClass("on")){
-            $(this).removeClass().addClass("off");
-            player.removePattern(time);
-        }else{
-            // 同じ列でクリックされた以外のセルをonクラスをremove
-            $(".on").filter(function(i){
-                return ($(this).text() == time);
-            }).each(function(){
-                $(this).removeClass().addClass("off");
-            });
-            $(this).removeClass().addClass("on");
-            player.addPattern(time, note);
-        }
-    }).mouseenter(function(){
-        if(pressed_mouse){
-            time = $(this).text();
-
-            // 同じ列でクリックされた以外のセルをonクラスをremove
-            $(".on").filter(function(i){
-                return ($(this).text() == time);
-            }).each(function(){
-                $(this).removeClass().addClass("off");
-            });
-            $(this).removeClass().addClass("on");
-            player.addPattern(time, note);
-        }
-    }).mouseup(function(){
-        pressed_mouse = false;
-    });
-    
-    $("#play").bind("mousedown", function(){
-        if(player.isPlaying()){
-            player.pause();
-            $(this).attr("value", "play");
-        }
-        else{
-            player.play();
-            $(this).attr("value", "pause");
-        }
-    });
-
-    $("#stop").bind("mousedown", function(){
-        player.stop();
-        $("#play").attr("value", "play");
-    });
-
-    
-
-    $("th").bind("mousedown", function(){
-        player.noteOn(note);
-    });
-    $("th").bind("mouseup", function(){
-        player.noteOff();
-    });
-
-    $("#control").bind("change", function(){
-        player.setBPM();
-        player.setKey();
-        player.setScale();
-    });
-
-
 
     $(window).keydown(function(e){
         if(pressed_key==false){
@@ -333,7 +282,38 @@ $(function(){
         player.noteOff();
     });
     
-    var pat = [3,3,10,3,10,3,9,3,3,3,10,3,10,3,9,3,1,1,10,1,10,1,9,1,2,2,10,2,10,2,9,2];
+    var pat = [[[3,1],
+                [3,1],
+                [10,1],
+                [3,1],
+                [10,1],
+                [3,1],
+                [9,1],
+                [3,1],
+                [3,1],
+                [3,1],
+                [10,1],
+                [3,1],
+                [10,1],
+                [3,1],
+                [9,1],
+                [3,1],
+                [1,1],
+                [1,1],
+                [10,1],
+                [1,1],
+                [10,1],
+                [1,1],
+                [9,1],
+                [1,1],
+                [2,1],
+                [2,1],
+                [10,1],
+                [2,1],
+                [10,1],
+                [2,1],
+                [9,1],
+                [2,1]]];
     player.readPattern(pat);
 });
 
