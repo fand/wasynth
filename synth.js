@@ -590,7 +590,6 @@ Sequencer.prototype.synchronizeTable = function(){
 
         }
     });
-
     
 };
 
@@ -632,22 +631,32 @@ Sequencer.prototype.clickCell = function(cell){
         break;
 
     case "glue":
-        if(self.pattern[time+1] == -1){
-            if(self.pattern[time] == -1){
-                var i = time;
-                while(self.pattern[i] == -1){ i--;}
-                if(self.pattern[i] != self.mouse_note){
-                    self.pattern[time+1] = self.pattern[i];
+        if(cell.hasClass("glue_hidden")){
+            var i = time;
+            while(self.pattern[i] == -1){ i--;}
+            while(self.pattern[i+1] == -1){
+                self.pattern[i++] = 0;
+            }
+            self.pattern[i] = 0;
+            self.removeGlue(time);
+        }else{
+            if(self.pattern[time+1] == -1){
+                if(self.pattern[time] == -1){
+                    var i = time;
+                    while(self.pattern[i] == -1){ i--;}
+                    if(self.pattern[i] != self.mouse_note){
+                        self.pattern[time+1] = self.pattern[i];
+                        self.pattern[time] = self.mouse_note;
+                    }
+                }else{
+                    self.pattern[time+1] = self.pattern[time];
                     self.pattern[time] = self.mouse_note;
                 }
+            }else if(self.pattern[time] == self.mouse_note){
+                // do nothing
             }else{
-                self.pattern[time+1] = self.pattern[time];
-                self.pattern[time] = self.mouse_note;
+                self.addNote(time, self.mouse_note);
             }
-        }else if(self.pattern[time] == self.mouse_note){
-            // do nothing
-        }else{
-            self.addNote(time, self.mouse_note);
         }
         self.drawGlue();
         break;
