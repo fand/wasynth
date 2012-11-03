@@ -489,6 +489,8 @@ var Sequencer = function(track, id){
     this.glue = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     this.glue_start = 0;
     this.glue_end = 0;
+
+    this.time_clicked = 0; // glueのclickでremoveGlueする時のために必要。
     
     // sequence = [patter_num][time][]
     // [note,duration]で一つのtone
@@ -620,6 +622,8 @@ Sequencer.prototype.clickCell = function(cell){
     self.glue_start = parseInt(time);
     self.glue_end = parseInt(time);
 
+    self.time_clicked = time;
+
     switch(self.edit_mode){
     case "pencil":
         for(var i=1; i<11; i++){
@@ -632,13 +636,6 @@ Sequencer.prototype.clickCell = function(cell){
 
     case "glue":
         if(cell.hasClass("glue_hidden")){
-            var i = time;
-            while(self.pattern[i] == -1){ i--;}
-            while(self.pattern[i+1] == -1){
-                self.pattern[i++] = 0;
-            }
-            self.pattern[i] = 0;
-            self.removeGlue(time);
         }else{
             if(self.pattern[time+1] == -1){
                 if(self.pattern[time] == -1){
@@ -723,9 +720,25 @@ Sequencer.prototype.dragCell = function(cell){
 };
 
 Sequencer.prototype.releaseCell = function(cell){
-    if(this.edit_mode=="pencil"){
-        this.synchronizeTable();
+    var self = this;
+    var time = cell.text();
+    switch(self.edit_mode){
+    case "pencil":
+        self.synchronizeTable();
+        break;
+    case "glue":
+        if(self.time_clicked==time){
+            var i = time;
+            while(self.pattern[i] == -1){ i--;}
+            while(self.pattern[i+1] == -1){
+                self.pattern[i++] = 0;
+            }
+            self.pattern[i] = 0;
+            self.removeGlue(self.time_clicked);
+        }
+        break;
     }
+    self.time_clicked = time;
 };
 
 Sequencer.prototype.initDOM = function(){
